@@ -11,6 +11,18 @@ export default function Timeline() {
   const [newTweet, setNewTweet] = useState("");
   const [tweets, setTweets] = useState([]);
 
+  function subscribeToEvents() {
+    const io = socket("http://localhost:3333");
+
+    io.on("tweet", data => {
+      setTweets([data, ...tweets]);
+    });
+
+    io.on("like", data => {
+      setTweets(tweets.map(tweet => (tweet._id === data._id ? data : tweet)));
+    });
+  }
+
   async function loadTweets() {
     const response = await api.get("/tweets");
 
@@ -38,18 +50,6 @@ export default function Timeline() {
     });
 
     setNewTweet("");
-  }
-
-  function subscribeToEvents() {
-    const io = socket("http://localhost:3333");
-
-    io.on("tweet", data => {
-      setTweets([data, ...tweets]);
-    });
-
-    io.on("like", data => {
-      console.log(data);
-    });
   }
 
   return (
