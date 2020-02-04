@@ -15,6 +15,7 @@ export default function Timeline() {
     const io = socket("http://localhost:3333");
 
     io.on("tweet", data => {
+      console.log("io.on", data);
       setTweets([data, ...tweets]);
     });
 
@@ -27,6 +28,7 @@ export default function Timeline() {
     const response = await api.get("/tweets");
 
     setTweets(response.data);
+    console.log(response.data);
   }
 
   useEffect(() => {
@@ -34,7 +36,7 @@ export default function Timeline() {
     loadTweets();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [tweets]);
+  }, []);
 
   async function handleNewTweet(e) {
     if (e.keyCode !== 13) {
