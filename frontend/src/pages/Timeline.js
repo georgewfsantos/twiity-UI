@@ -15,12 +15,13 @@ export default function Timeline() {
     const io = socket("http://localhost:3333");
 
     io.on("tweet", data => {
-      console.log("io.on", data);
-      setTweets([data, ...tweets]);
+      setTweets(prev => [data, ...prev]);
     });
 
     io.on("like", data => {
-      setTweets(tweets.map(tweet => (tweet._id === data._id ? data : tweet)));
+      setTweets(prev =>
+        prev.map(tweet => (tweet._id === data._id ? data : tweet))
+      );
     });
   }
 
@@ -28,7 +29,6 @@ export default function Timeline() {
     const response = await api.get("/tweets");
 
     setTweets(response.data);
-    console.log(response.data);
   }
 
   useEffect(() => {
