@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 
 import {
@@ -9,25 +9,39 @@ import {
   KeyboardAvoidingView,
   TouchableOpacity,
   TextInput,
-  
 } from 'react-native';
 
 import logo from '../assets/logo.png';
 
 // import { Container } from './styles';
 
-export default function Login() {
+export default function Login({navigation}) {
   const [username, setUsername] = useState('');
 
-  async function handleLogin(){
+  async function handleLogin() {
     if (!username) {
       return;
     }
 
-    await AsyncStorage('@Twitty:username', username);
+    await AsyncStorage.setItem('@Twitty:username', username);
+
+    navigation.navigate('Timeline');
   }
+
+  useEffect(() => {
+    async function getUser() {
+      const user = await AsyncStorage.getItem('@Twitty:username');
+
+      if (user) {
+        navigation.navigate('App');
+      }
+    }
+    getUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
-    <KeyboardAvoidingView style={styles.container}>
+    <KeyboardAvoidingView style={styles.container} behavior="padding">
       <View style={styles.content}>
         <Image style={styles.image} source={logo} />
         <TextInput
@@ -36,7 +50,7 @@ export default function Login() {
           value={username}
           onSubmitEditing={handleLogin}
           returnKeyType="send"
-          OnChangeText={setUsername}
+          onChangeText={setUsername}
         />
 
         <TouchableOpacity onPress={handleLogin} style={styles.button}>
